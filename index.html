@@ -10,18 +10,18 @@
 
     <script src="js/three.js"></script>
     <script src="js/OrbitControls.js"></script>
-<!--    <script src="js/TrackballControls.js"></script>-->
+    <!--    <script src="js/TrackballControls.js"></script>-->
     <script src="js/construct.js"></script>
 
-<!--    <script>-->
-<!--        var Module = {-->
-<!--            onRuntimeInitialized: function() {-->
-<!--                document.getElementById(0).value = Module.test();-->
-<!--            }-->
-<!--        };-->
-<!--    </script>-->
-<!--&lt;!&ndash;    <script src="test.js"></script>&ndash;&gt;-->
-<!--    <script src="main.js"></script>-->
+    <!--    <script>-->
+    <!--        var Module = {-->
+    <!--            onRuntimeInitialized: function() {-->
+    <!--                document.getElementById(0).value = Module.test();-->
+    <!--            }-->
+    <!--        };-->
+    <!--    </script>-->
+    <!--&lt;!&ndash;    <script src="test.js"></script>&ndash;&gt;-->
+    <!--    <script src="main.js"></script>-->
 
 </head>
 <body>
@@ -48,7 +48,6 @@
             </li>
 
 
-
         </ul>
     </div><!-- /.container-fluid -->
 </nav>
@@ -65,15 +64,27 @@
     </div>
     <div class="col-md-6">
         <div class="container-fluid" id='container2'>
+            <div class="panel panel-primary">
+                <div class="panel-heading">求解</div>
+                <div class="panel-body" id="0" align="center">
 
+                    <button type="button" class="btn btn-primary">生成打乱</button>
+                    <button type="button" class="btn btn-success">进行求解</button>
+
+                    <br>
+                    <br>
+
+
+                    <textarea class="form-control" id="deblock_udid" name="deblock_udid" rows="16" style="min-width: 90%"></textarea>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+</div>
 
 
-<!--<textarea id=0 rows="10" cols="30">-->
-<!--    hhhh-->
-<!--</textarea>-->
+
 
 <script>
     //test = solve([1, 2], [[2, 1]], {'M': {0: 1, 1: 0}});
