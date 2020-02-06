@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        var Module = {
+            onRuntimeInitialized: function() {
+                document.getElementById(0).value = Module.test();
+            }
+        };
+    </script>
+<!--    <script src="test.js"></script>-->
+    <script src="main.js"></script>
+
+</head>
+<body>
+<textarea id=0 rows="10" cols="30">
+    hhhh
+</textarea>
+</body>
+</html>
