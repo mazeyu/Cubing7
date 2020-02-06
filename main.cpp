@@ -15,9 +15,10 @@ using namespace std;
 using namespace emscripten;
 
 
-#define M 4
-// This means M by M by M cube
+int M;
 
+// This means M by M by M cube
+#define FN 9
 #define N (M + 2)
 #define mp make_pair
 #define rep(i, l, r) for (int i = l; i < r; i++)
@@ -56,7 +57,7 @@ struct cood {
 };
 
 struct state {
-    char a[N][N][N];
+    char a[FN][FN][FN];
 
     state() {
         rep(i, 0, N) rep(j, 0, N) rep(k, 0, N) a[i][j][k] = 0;
@@ -150,10 +151,10 @@ map<string, perm> perms;
 vector<perm> permsP;
 vector<string> permsS, laterTurnSet, edgeSet, edgeSet2, pureU, simpleSet, lazySet1, lazySet2;
 vector<bar> bars;
-vector<bar> bars1d[N];
-vector<cood> c2ds[N][N];
+vector<bar> bars1d[FN];
+vector<cood> c2ds[FN][FN];
 map<edge, int> mapEdgeC1d;
-vector<edge> edges1d[N];
+vector<edge> edges1d[FN];
 vector<edge> seudoEdges;
 vector<pair<char, char> > colorPairs;
 
@@ -1236,8 +1237,8 @@ alg readAlg(string file) {
 
 string test() {
 
-
-    srand(123);
+    M = 4;
+    srand(1234);
     init();
 
 
