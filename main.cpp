@@ -1,4 +1,5 @@
 #include <emscripten/bind.h>
+#include <emscripten.h>
 #include <iostream>
 #include <vector>
 #include <map>
@@ -16,6 +17,10 @@ using namespace emscripten;
 
 
 int M;
+
+
+
+
 
 // This means M by M by M cube
 #define FN 9
@@ -168,6 +173,27 @@ alg inverse(alg a) {
     return ret;
 }
 
+alg readAlg(string file) {
+    ifstream f(file);
+    alg a;
+    string x;
+    while (f >> x) {
+        a.push_back(x);
+    }
+//    a = inverse(a);
+    return a;
+}
+
+alg algFromStr(string s) {
+    stringstream f(s);
+    alg a;
+    string x;
+    while (f >> x) {
+        a.push_back(x);
+    }
+//    a = inverse(a);
+    return a;
+}
 
 alg lazyA{"F", "R", "U", "R'", "U'", "F'"}, lazyAPrime = inverse(lazyA);
 
@@ -179,14 +205,25 @@ alg lazyD{"R", "U'", "R", "U", "R", "U", "R", "U'", "R'", "U'", "R2"}, lazyDPrim
 
 alg parityA, parityB;
 
+void outText(string s) {
+    string cmd = "document.getElementById(\"2333\").value = document.getElementById(\"2333\").value + `" + s + "`";
+//    cmd = "alert(`" + f.str() + "`)";
+    cout << cmd << endl;
+    emscripten_run_script(cmd.c_str());
+}
+
+
 void print(alg a, stringstream &s) {
     rep(i, 0, a.size()) {
         if (a[i].substr(0, 7) == "insertA") {
             s << "R' U" << a[i].substr(7, a[i].size() - 7) << " R ";
+            outText("R' U" + a[i].substr(7, a[i].size() - 7) + " R ");
         } else if (a[i].substr(0, 7) == "insertB") {
             s << "R U" << a[i].substr(7, a[i].size() - 7) << " R' ";
+            outText("R U" + a[i].substr(7, a[i].size() - 7) + " R' ");
         } else if (a[i] == "flip") {
             s << "R U R' F R' F' R ";
+            outText("R U R' F R' F' R ");
         } else if (a[i] == "lazyA") print(lazyA, s);
         else if (a[i] == "lazyB") print(lazyB, s);
         else if (a[i] == "lazyC") print(lazyC, s);
@@ -199,9 +236,14 @@ void print(alg a, stringstream &s) {
         else if (a[i] == "lazyD'") print(lazyDPrime, s);
         else if (a[i] == "parityA'") print(parityA, s);
         else if (a[i] == "parityB'") print(parityB, s);
-        else s << a[i] << " ";
+        else {
+            s << a[i] << " ";
+            outText(a[i] + " ");
+        }
     }
     s << endl;
+    outText("\n");
+
 }
 
 
@@ -332,7 +374,27 @@ perm permFromStr(vector<string> s) {
 
 
 
+
 void init() {
+    State = state();
+    perms.clear();
+    permsP.clear();
+    permsS.clear();
+    laterTurnSet.clear();
+    edgeSet.clear();
+    edgeSet2.clear();
+    pureU.clear();
+    simpleSet.clear();
+    lazySet1.clear();
+    lazySet2.clear();
+    bars.clear();
+    rep(i, 0, FN) bars1d[i].clear();
+    rep(i, 0, FN) rep(j, 0, FN) c2ds[i][j].clear();
+    mapEdgeC1d.clear();
+    rep(i, 0, FN) edges1d[i].clear();
+    seudoEdges.clear();
+    colorPairs.clear();
+
     appoint(yRotate(N - 2, N), "R'", "R2", "R");
     appoint(yRotate(0, 2), "L", "L2", "L'");
     appoint(zRotate(N - 2, N), "U", "U2", "U'");
@@ -771,6 +833,8 @@ void barWithTh(state oState, int stage, bar Bar, vector<bar> barScheme, int colo
     }
 }
 
+
+
 state solveCenter(state State) {
 
 
@@ -856,20 +920,24 @@ state solveCenter(state State) {
         } else if (stage == N - 4) {
             firstColor = currentColor;
             f << endl;
+            outText("\n");
             cout << endl;
             viableColor.emplace_back(5 - currentColor);
         } else if (stage == 2 * N - 8) {
             f << endl;
+            outText("\n");
             cout << endl;
             rep(i, 0, 6) if (i != currentColor && 5 - i != currentColor) viableColor.emplace_back(i);
         } else if (stage == 3 * N - 12) {
             f << endl;
+            outText("\n");
             cout << endl;
             viableColor.emplace_back(
                     colorMap[nextColor[mp(mp(colors[firstColor], colors[currentColor]), colors[5 - firstColor])]]);
         } else if (stage == 4 * N - 16) {
 //            cout << clock() - start << endl;
             f << endl;
+            outText("\n");
             cout << endl;
             viableColor.emplace_back(5 - currentColor);
         } else {
@@ -984,6 +1052,7 @@ state solveEdge(state State) {
 //    ofstream f2("alg.txt", ios_base::app);
     stringstream &f2 = f;
     f2 << endl;
+    outText("\n");
     auto oState = State;
     rep(k, 0, 8) {
         int shortestLen = 999;
@@ -1131,6 +1200,8 @@ void solveThree(state State) {
 //    show(State1);
     auto al = bd_bfs(State2, State1, simpleSet, 999);
     f3 << endl;
+    outText("\n");
+
     print(al, f3);
     State = apply(State, al);
 
@@ -1222,23 +1293,34 @@ void solveThree(state State) {
 
 }
 
-alg readAlg(string file) {
-    ifstream f(file);
-    alg a;
-    string x;
-    while (f >> x) {
-        a.push_back(x);
-    }
-    a = inverse(a);
-    return a;
+
+
+
+void scramble(int M_) {
+
+
+    M = M_;
+    auto al = randomAlg();
+    stringstream f("");
+    print(al, f);
+    cout << f.str() << endl;
+    string cmd = "document.getElementById(\"2333\").value = `" + f.str() + "`";
+//    cmd = "alert(`" + f.str() + "`)";
+    cout << cmd << endl;
+    emscripten_run_script(cmd.c_str());
+
+
+
 }
 
 
+void solve(int M_, string scr) {
 
-string test() {
+    M = M_;
+//    srand(1234);
+    outText("\n");
+    outText("\n");
 
-    M = 4;
-    srand(1234);
     init();
 
 
@@ -1252,25 +1334,30 @@ string test() {
 //
 //    if (DEBUG) {
 //        ifstream f("alg.txt");
-//        string s;
-//        while (f >> s) {
-//            State = apply(State, perms[s]);
-//        }
-//        f.close();
-//        show(State);
+
+    stringstream f(scr);
+    string s;
+    while (f >> s) {
+        State = apply(State, perms[s]);
+    }
+//    f.close();
+//    show(State);
+
+
+
 //    } else {
 
 
-
-    f = stringstream(""); //ofstream("alg.txt");
-
-    start = clock();
-    auto al = randomAlg();
-
-    print(al, f);
-    f << endl;
-    f << "R R R R R R R R R R R R" << endl;
-    State = apply(State, al);
+//
+//    f = stringstream(""); //ofstream("alg.txt");
+//
+////    start = clock();
+//    auto al = randomAlg();
+//
+//    print(al, f);
+//    f << endl;
+//    f << "R R R R R R R R R R R R" << endl;
+//    State = apply(State, al);
 
 
 
@@ -1395,15 +1482,28 @@ string test() {
 
     solveThree(State);
 
-    return f.str();
+//    return f.str();
 
 
 //    return 0;
 }
 
+string reverseAlg(string s) {
+    alg a = inverse(algFromStr(s));
+    string out = "";
+    for (string turn: a) {
+        out = out + turn + " ";
+    }
+    return out;
+}
+
 EMSCRIPTEN_BINDINGS(module) {
 
-  emscripten::function("test", &test);
+  emscripten::function("solve", &solve);
+  emscripten::function("scramble", &scramble);
+  emscripten::function("reverse", &reverseAlg);
+
+
   // register bindings for std::vector<int> and std::map<int, std::string>.
 //  register_vector<int>("vector<int>");
 //  register_map<int, std::string>("map<int, string>");

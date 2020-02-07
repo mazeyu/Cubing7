@@ -606,6 +606,7 @@ function NewPyramix() {
 
 
 function NewCube(n) {
+    document.M = n;
 
     let v = new THREE.CubeGeometry(1, 1, 1, n, n, n).vertices;
     let f = new THREE.CubeGeometry(1, 1, 1, n, n, n).faces;
@@ -858,4 +859,46 @@ function addSkew() {
     let Skew = NewSkew();
     myCube.push(Skew);
     displayCube(Skew);
+}
+
+function scramble0() {
+    // document.getElementById("2333").value = "2333";
+
+    // Module.reload();
+    Module.scramble(document.M);
+
+}
+
+function solve0() {
+    // document.getElementById("2333").value = "2333";
+
+    // Module.reload();
+    Module.solve(document.M, document.getElementById("2333").value);
+
+}
+
+function turn0() {
+    let cursor = document.getElementById("2333").selectionStart;
+    while (cursor !== 0 && cursor !== document.getElementById("2333").value.length && document.getElementById("2333").value[cursor] !== ' ' && document.getElementById("2333").value[cursor - 1] !== ' '
+            && document.getElementById("2333").value[cursor] !== '\n' && document.getElementById("2333").value[cursor - 1] !== '\n')
+        {
+            cursor += 1;
+        }
+    let text = "";
+    if (document.cursor === undefined)
+        text = document.getElementById("2333").value.substr(0, cursor);
+    else if (cursor >= document.cursor) {
+        text = document.getElementById("2333").value.substr(document.cursor, cursor - document.cursor);
+    }
+    else {
+        text = Module.reverse(document.getElementById("2333").value.substr(cursor, -cursor + document.cursor));
+    }
+    if (text === '') return;
+    for (let move of text.split(/[\s\n]/)) {
+        if (move === '') continue;
+        if (move === '\n') continue;
+        myCube[0].moveList.push(move);
+    }
+    document.cursor = cursor;
+
 }
